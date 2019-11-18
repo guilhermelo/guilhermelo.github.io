@@ -1,0 +1,17 @@
+I"z<h2>O início</h2>
+
+<p>
+Clojure possui uma sintaxe muito simples, onde se define o operador e os operandos entre parenteses. Exemplo: 
+
+(operador operando1 operando2... operando)
+
+Entendeu? Não?!. Então vamos a algo mais claro. Suponhamos que desejamos fazer uma soma entre 5 números. Em Clojure fazemos assim:
+
+<p><code>(+ 3 7 8)</code></p>
+
+No código acima 
+
+
+</p>
+<hr />
+:ET

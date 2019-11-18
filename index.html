@@ -11,9 +11,7 @@ title: Home
         {{ post.title }}
       </a>
     </h1>
-
     <span class="post-date">{{ post.date | date_to_string }}</span>
-
     {{ post.content }}
   </div>
   {% endfor %}
@@ -27,9 +25,9 @@ title: Home
   {% endif %}
   {% if paginator.previous_page %}
     {% if paginator.page == 2 %}
-      <a class="pagination-item newer" href="{{ site.baseurl }}/">Newer</a>
+      <a class="pagination-item newer" href="{{ site.baseurl }}/">Novo</a>
     {% else %}
-      <a class="pagination-item newer" href="{{ site.baseurl }}/page{{paginator.previous_page}}">Newer</a>
+      <a class="pagination-item newer" href="{{ site.baseurl }}/page{{paginator.previous_page}}">Velho</a>
     {% endif %}
   {% else %}
     <span class="pagination-item newer">Newer</span>
