@@ -1,14 +1,8 @@
----
-layout: post
-title: Começando com Clojure
-tags: [funcional, clojure]
----
-<h2>O início</h2>
+I"�<h2>O início</h2>
 
 <p>
 Clojure possui uma sintaxe muito simples, porém que pode confundir muito <s>(me confundiu muito)</s> quem está começando no mundo de linguagens que são baseadas em Lisp. 
 </p>
-
 
 <p><code>(operador operando1 operando2... operando)</code></p>
 
@@ -16,10 +10,10 @@ Clojure possui uma sintaxe muito simples, porém que pode confundir muito <s>(me
 Não entendeu? Então vamos para um exemplo. Suponhamos que você deseja realizar uma soma entre 5 números. </p>
 
 <p>O que em Javascript poderíamos fazer assim:</p>
-<code>let resultado = 3 + 7 + 8;</code>
+<p><code>let resultado = 3 + 7 + 8;</code></p>
 
 <p>Em Clojure fazemos assim: </p>
-<p><code >(+ 3 7 8)</code><br><i>=> 18</i></p>
+<p><code>(+ 3 7 8)</code><br /><i>=&gt; 18</i></p>
 
 <p>
 No código acima o operador "+" soma os parâmetros 3, 7 e 8.
@@ -27,8 +21,8 @@ No código acima o operador "+" soma os parâmetros 3, 7 e 8.
 
 <p>Um outro exemplo utilizando o famoso Hello World, onde a <i>string</i> "Hello World" é passada como parâmetro para a função println: </p>
 
-<p><code>(println "Hello World")</code><br><i>=> "Hello World"</i></p>
-<br/>
+<p><code>(println "Hello World")</code><br /><i>=&gt; "Hello World"</i></p>
+
 <h2>Nomeando valores</h2>
 
 <p>Usa-se a instrução <b>def</b> para vincular o nome do símbolo a um valor. Exemplos: </p>
@@ -37,10 +31,10 @@ No código acima o operador "+" soma os parâmetros 3, 7 e 8.
 <p><code>(def contas-pagas 100)</code></p>
 
 <p>Imprimindo os valores definidos: </p>
-<p><code>(println texto)</code><br><i>=> "Iniciando com Clojure"</i></p>
-<p><code>(println "Quantidade de contas pagas:"  contas-pagas)</code><br><i>=> "Quantidade de contas pagas: 100"</i></p>
+<p><code>(println texto)</code></p>
+<p><code>(println "Quantidade de contas pagas:"  contas-pagas)</code></p>
 
-<br/>
+<p><br /></p>
 <h2>Estruturas de dados</h2>
 
 <p>Em Clojure todas as estruturas de dados são imutáveis, ou seja, seus valores não podem ser alterados. 
@@ -76,9 +70,9 @@ No código acima o operador "+" soma os parâmetros 3, 7 e 8.
 
 <p>Para recuperar alguma informação do mapa, utilizamos a função <b>get</b>. Nela nós passamos o mapa e a keyword utilizada como chave para recuperar a informação desejada. Exemplo: </p>
 
-<p><code>(get mapa :nome)</code><br/><i>=> "Guilherme"</i></p>
+<p><code>(get mapa :nome)</code><br /><i>=&gt; "Guilherme"</i></p>
 
-<br/>
+<br />
 <div class="message">
 <p><i>Keywors são geralmente utilizadas como chaves em mapas no Clojure.</i></p>
 </div>
@@ -89,11 +83,11 @@ No código acima o operador "+" soma os parâmetros 3, 7 e 8.
 <p><code>(def numeros [3 2 1])</code></p>
 
 <p>Recuperando item do vetor de acordo com o índice: </p>
-<p><code>(get numeros 2)</code><br/><i> => 1</i></p>
+<p><code>(get numeros 2)</code><br /><i> =&gt; 1</i></p>
 
 <p>Também é possível criar vetores utilizando a função <b>vector</b></p>
 <p><code>(def empresas (vector "Apple" "Microsoft" "Samsung"))</code></p>
-<p><code>(get empresas 1)</code><br/><i> => "Microsoft"</i></p>
+<p><code>(get empresas 1)</code><br /><i> =&gt; "Microsoft"</i></p>
 
 <h3>Listas</h3>
 
@@ -101,7 +95,7 @@ No código acima o operador "+" soma os parâmetros 3, 7 e 8.
 
 <p><code>(def numeros '(1 2 3 4))</code></p>
 <p><code>(def estados '("SP" "RJ" "RS" "PR"))</code></p>
-<p><code>(nth estados 2)</code><br/><i> => "RS"</i></p>
+<p><code>(nth estados 2)</code><br /><i> =&gt; "RS"</i></p>
 
 <p>Levando em consideração a performance, a função <b>get</b> é mais rápida que a <b>nth</b>, pois a <b>nth</b> passa por todos os elementos da lista para encontrar o item buscado.</p>
 
@@ -120,7 +114,11 @@ No código acima o operador "+" soma os parâmetros 3, 7 e 8.
 <p><code>(def produtos (hash-set "Refrigerante" "Carne" "Arroz"))</code></p>
 
 <p>Podemos inclusive transformar um vetor em um set: </p>
-<p><code>(set [2 2 5 6 5 1 1])</code><br/><i>=> #{1 6 2 5}</i></p>
+<p><code>(set [2 2 5 6 5 1 1])</code><br /><i>=&gt; #{2 5 6 1}</i></p>
 
-<br/>
-<hr/><hr/>
+
+
+<br />
+<hr /><hr />
+</p></p></p></p></p></p></p></p></p>
+:ET
