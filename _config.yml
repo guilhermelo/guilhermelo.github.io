@@ -28,7 +28,7 @@ url: "" # the base hostname & protocol for your site, e.g. http://example.com
 twitter_username: guiilerme
 github_username:  guilhermelo
 
-permalink: /:title/
+permalink: guilhermelo.github.io/:title/
 
 # Build settings
 theme: minima
