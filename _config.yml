@@ -28,7 +28,7 @@ url: "https://guilhermelo.github.io" # the base hostname & protocol for your sit
 twitter_username: guiilerme
 github_username:  guilhermelo
 
-permalink: /:year/:month/:day/:title/
+permalink: /:year/:month/:day/:title
 
 # Build settings
 theme: minima
