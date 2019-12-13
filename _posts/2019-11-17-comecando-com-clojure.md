@@ -2,6 +2,7 @@
 layout: post
 title: Começando com Clojure
 tags: [funcional, clojure]
+categories: [funcional, clojure]
 ---
 <h2>O início</h2>
 
