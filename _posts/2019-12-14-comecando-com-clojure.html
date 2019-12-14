@@ -4,17 +4,33 @@ title: Começando com Clojure
 tags: [funcional, clojure]
 categories: [funcional, clojure]
 ---
+
+<h2>O que é Clojure? </h2>
+<p>Clojure é um dialeto de Lisp, que é uma linguagem de programação funcional. 
+    Clojure roda na JVM (Java Virtual Machine), possui uma sintaxe um tanto 
+    quanto peculiar e simples. Por poder ser executada na JVM, 
+    programas escritos em Clojure pode fazer uso de bibliotecas Java.</p>
+
+<h2>Mas o que é uma programação funcional?</h2>
+
+<p>Programação funcional é um paradigma de programação, ou seja, é uma 
+    forma de se programar. Este paradigma é baseado em um modelo computacional 
+    chamado <i>Cálculo Lambda</i>, criado por Alonzo Church em 1930. 
+    Em programação funcional tudo é função, ou seja, um código funcional é uma 
+    sequência de funções que resolvem um problema.</p>
+
 <h2>O início</h2>
 
 <p>
-Clojure possui uma sintaxe muito simples, porém que pode confundir muito <s>(me confundiu muito)</s> quem está começando no mundo de linguagens que são baseadas em Lisp. 
+Como dito anteriormente, Clojure possui uma sintaxe muito simples, porém que 
+pode confundir muito <s>(me confundiu muito)</s> quem está começando no mundo de 
+linguagens baseadas em Lisp. Abaixo como é escrito o código Clojure: 
 </p>
-
 
 <p><code>(operador operando1 operando2... operando)</code></p>
 
 <p>
-Não entendeu? Então vamos para um exemplo. Suponhamos que você deseja realizar uma soma entre 5 números. </p>
+Não entendeu? Então vamos ao exemplo. Suponhamos que você deseja realizar uma soma entre 5 números. </p>
 
 <p>O que em Javascript poderíamos fazer assim:</p>
 <code>let resultado = 3 + 7 + 8;</code>
@@ -81,7 +97,7 @@ No código acima o operador "+" soma os parâmetros 3, 7 e 8.
 
 <br/>
 <div class="message">
-<p><i>Keywors são geralmente utilizadas como chaves em mapas no Clojure.</i></p>
+<p><i>Keywors são geralmente utilizadas como chaves em mapas no Clojure. No exemplo anterior, <b>:nome</b> é uma keyword. </i></p>
 </div>
 
 <h3>Vetores</h3>
@@ -122,6 +138,6 @@ No código acima o operador "+" soma os parâmetros 3, 7 e 8.
 
 <p>Podemos inclusive transformar um vetor em um set: </p>
 <p><code>(set [2 2 5 6 5 1 1])</code><br/><i>=> #{1 6 2 5}</i></p>
-
+<p>Por enquanto é isso. Quem sabe nos vemos em um próximo post. :)</p>
 <br/>
-<hr/><hr/>
+<hr/>
