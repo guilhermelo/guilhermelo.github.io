@@ -27,16 +27,24 @@ pode confundir muito <s>(me confundiu muito)</s> quem está começando no mundo 
 linguagens baseadas em Lisp. Abaixo como é escrito o código Clojure: 
 </p>
 
-<p><code>(operador operando1 operando2... operando)</code></p>
+{% highlight clojure %}
+(operador operando1 operando2... operando)
+{% endhighlight %}
 
 <p>
 Não entendeu? Então vamos ao exemplo. Suponhamos que você deseja realizar uma soma entre 5 números. </p>
 
 <p>O que em Javascript poderíamos fazer assim:</p>
-<code>let resultado = 3 + 7 + 8;</code>
+
+{% highlight javascript %}
+let resultado = 3 + 7 + 8;
+{% endhighlight %}
 
 <p>Em Clojure fazemos assim: </p>
-<p><code >(+ 3 7 8)</code><br><i>=> 18</i></p>
+{% highlight clojure %}
+(+ 3 7 8)
+=> 18
+{% endhighlight %}
 
 <p>
 No código acima o operador "+" soma os parâmetros 3, 7 e 8.
@@ -44,18 +52,28 @@ No código acima o operador "+" soma os parâmetros 3, 7 e 8.
 
 <p>Um outro exemplo utilizando o famoso Hello World, onde a <i>string</i> "Hello World" é passada como parâmetro para a função println: </p>
 
-<p><code>(println "Hello World")</code><br><i>=> "Hello World"</i></p>
+{% highlight clojure %}
+(println "Hello World")
+=> "Hello World"
+{% endhighlight %}
 <br/>
 <h2>Nomeando valores</h2>
 
 <p>Usa-se a instrução <b>def</b> para vincular o nome do símbolo a um valor. Exemplos: </p>
 
-<p><code>(def texto "Iniciando com Clojure")</code></p>
-<p><code>(def contas-pagas 100)</code></p>
+{% highlight clojure %}
+(def texto "Iniciando com Clojure")
+(def contas-pagas 100)
+{% endhighlight %}
 
 <p>Imprimindo os valores definidos: </p>
-<p><code>(println texto)</code><br><i>=> "Iniciando com Clojure"</i></p>
-<p><code>(println "Quantidade de contas pagas:"  contas-pagas)</code><br><i>=> "Quantidade de contas pagas: 100"</i></p>
+{% highlight clojure %}
+(println texto)
+=> "Iniciando com Clojure"
+
+(println "Quantidade de contas pagas:"  contas-pagas)
+=> "Quantidade de contas pagas: 100"
+{% endhighlight %}
 
 <br/>
 <h2>Estruturas de dados</h2>
@@ -66,34 +84,47 @@ No código acima o operador "+" soma os parâmetros 3, 7 e 8.
 
 <p>Em Clojure podemos definir três tipos básicos de números, sendo eles Integer, Float ou fracionados. Exemplo: 
 
-<p><code>(def numero-inteiro 10)</code><p>
-<p><code>(def numero-ponto-flutuante 3.5)</code><p>
-<p><code>(def numero-fracionado 10/3)</code><p>
+{% highlight clojure %}
+(def numero-inteiro 10)
+(def numero-ponto-flutuante 3.5)
+(def numero-fracionado 10/3)
+{% endhighlight %}
 
 <h3>Strings</h3>
 
 <p>Strings representam textos, assim como em outras linguagens de programação. Exemplo: </p>
 
-<p><code>(def hobbit "Bilbo")</code></p>
+{% highlight clojure %}
+(def hobbit "Bilbo")
+{% endhighlight %}
 
 <h3>Mapas</h3>
 
 <p>Mapas, assim como em outras linguagens de programação, são estruturas que armazenam chaves e valores. Abaixo algus exemplos de mapas em Clojure: </p>
 
-<p><code>(def usuario {:nome "Guilherme" :idade 30})</code></p>
+{% highlight clojure %}
+(def usuario {:nome "Guilherme" :idade 30})
 
-<p><code>(def funcao {"funcao-soma" +})</code></p>
+(def funcao {"funcao-soma" +})
+{% endhighlight %}
 
 <p>Também é possível encadear mapas: </p>
-<p><code>(def mapa {:nome "Guilherme" :endereco {:cidade "São Paulo" :rua "Rua Sete de Abril"}})</code></p>
+{% highlight clojure %}
+(def mapa {:nome "Guilherme" :endereco {:cidade "São Paulo" :rua "Rua Sete de Abril"}})
+{% endhighlight %}
 
 <p>Outra forma de criar mapas é através da função <b>hash-map</b>: </p>
 
-<p><code>(def usuario (hash-map :nome "Guilherme" :cidade "São Paulo"))</code></p>
+{% highlight clojure %}
+(def usuario (hash-map :nome "Guilherme" :cidade "São Paulo"))
+{% endhighlight %}
 
 <p>Para recuperar alguma informação do mapa, utilizamos a função <b>get</b>. Nela nós passamos o mapa e a keyword utilizada como chave para recuperar a informação desejada. Exemplo: </p>
 
-<p><code>(get mapa :nome)</code><br/><i>=> "Guilherme"</i></p>
+{% highlight clojure %}
+(get mapa :nome)
+=> "Guilherme"
+{% endhighlight %}
 
 <br/>
 <div class="message">
@@ -103,41 +134,63 @@ No código acima o operador "+" soma os parâmetros 3, 7 e 8.
 <h3>Vetores</h3>
 <p> Um vetor é como um array em linguagens mais comuns, onde o index começa no 0. Definindo um símbolo como vetor: 
 
-<p><code>(def numeros [3 2 1])</code></p>
+(def numeros [3 2 1])
 
 <p>Recuperando item do vetor de acordo com o índice: </p>
-<p><code>(get numeros 2)</code><br/><i> => 1</i></p>
+{% highlight clojure %}
+(get numeros 2)
+=> 1
+{% endhighlight %}
 
 <p>Também é possível criar vetores utilizando a função <b>vector</b></p>
-<p><code>(def empresas (vector "Apple" "Microsoft" "Samsung"))</code></p>
-<p><code>(get empresas 1)</code><br/><i> => "Microsoft"</i></p>
+
+{% highlight clojure %}
+(def empresas (vector "Apple" "Microsoft" "Samsung"))
+
+(get empresas 1)
+=> "Microsoft"
+{% endhighlight %}
 
 <h3>Listas</h3>
 
 <p>Listas são parecidas com vetores em Clojure, porém com algumas diferenças. Por exemplo, para recuperar algum item de acordo com a posição da lista, usa-se a função <b>nth</b> e não a função <b>get</b>. Para declarar uma lista, basta definir os itens da lista entre parênteres e colocar um apóstrofo no início. Exemplo: </p>
 
-<p><code>(def numeros '(1 2 3 4))</code></p>
-<p><code>(def estados '("SP" "RJ" "RS" "PR"))</code></p>
-<p><code>(nth estados 2)</code><br/><i> => "RS"</i></p>
+{% highlight clojure %}
+(def numeros '(1 2 3 4))
+(def estados '("SP" "RJ" "RS" "PR"))
+
+(nth estados 2)
+=> "RS"
+{% endhighlight %}
 
 <p>Levando em consideração a performance, a função <b>get</b> é mais rápida que a <b>nth</b>, pois a <b>nth</b> passa por todos os elementos da lista para encontrar o item buscado.</p>
 
 <p>Também é possível criar listas utilizando a função <b>list</b>:</p>
 
-<p><code>(def numeros (list 1 2 3 4))</code></p>
+{% highlight clojure %}
+(def numeros (list 1 2 3 4))
+{% endhighlight %}
 
 <h3>Sets</h3>
 
 <p>Sets são coleções em que os itens são únicos, ou seja, não podem se repetir. Em Clojure temos duas formas de criar um Set: </p>
 
 <p>Forma literal: </p>
-<p><code>(def produtos #{"Refrigerante" "Carne" "Arroz"})</code></p>
+{% highlight clojure %}
+(def produtos #{"Refrigerante" "Carne" "Arroz"})
+{% endhighlight %}
 
 <p>Utilizando a função <b>hash-set</b>: </p>
-<p><code>(def produtos (hash-set "Refrigerante" "Carne" "Arroz"))</code></p>
+{% highlight clojure %}
+(def produtos (hash-set "Refrigerante" "Carne" "Arroz"))
+{% endhighlight %}
 
 <p>Podemos inclusive transformar um vetor em um set: </p>
-<p><code>(set [2 2 5 6 5 1 1])</code><br/><i>=> #{1 6 2 5}</i></p>
+{% highlight clojure %}
+(set [2 2 5 6 5 1 1])
+=> #{1 6 2 5}
+{% endhighlight %}
+
 <p>Por enquanto é isso. Quem sabe nos vemos em um próximo post. :)</p>
 <br/>
 <hr/>
