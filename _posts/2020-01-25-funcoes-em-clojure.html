@@ -1,0 +1,262 @@
+---
+layout: post
+title: Funções em Clojure
+tags: [funcional, clojure]
+categories: [funcional, clojure]
+---
+
+Vimos no <a href="https://guilhermelo.github.io/2019/12/14/comecando-com-clojure">post anterior</a> como são as estruturas básicas de dados em Clojure.
+Nesse post, veremos como declarar e trabalhar com funções na linguagem Clojure.
+
+<h2>Definindo funções</h2>
+
+<p>A criação de uma função é dividida em cinco partes, sendo elas:</p>
+
+<ol>
+    <li>defn</li>
+    <li>Nome da função</li>
+    <li>A documentação da função, sendo opcional</li>
+    <li>Parâmetros que são passados entre colchetes</li>
+    <li>Corpo da função</li>
+</ol>
+
+<p>Criando nossa primeira função em Clojure:</p>
+
+{% highlight clojure %}
+(defn ola
+"Função que retorna um texto de boas vindas!"
+[nome]
+(println "Olá, " nome))
+{% endhighlight %}
+
+<p>Acima definimos o nome da nossa função como "ola",
+    escrevemos uma documentação simples, passamos "nome" como parâmetro
+    e criamos um corpo da função que imprime a frase retornada.
+</p>
+
+<p>Invocando a função: </p>
+
+{% highlight clojure %}
+(ola "Guilherme")
+; Olá Guilherme
+{% endhighlight %}
+
+<br>
+<h2>Parâmetros e Aridade</h2>
+
+<p>
+    Em linguagens orientadas a objetos podemos ter métodos com
+    o mesmo nome, porém com quantidade de parâmetros diferentes na mesma classe.
+    Em Clojure, temos algo parecido. Podemos definir que uma função pode ter
+    diferentes formas de implementação com diferentes aridades (número de parâmetros
+    passados para a função), o que chamamos de sobrecarga de aridade (<i>arity overloading</i>). Abaixo nossa função "ola"
+    ganha novas aridades e para isso, devemos modificar um pouco a forma como escrevemos a função, envolvendo
+    cada forma de implementar com parênteses.
+</p>
+
+{% highlight clojure %}
+(defn ola
+"Função que retorna um texto de boas vindas!"
+([nome]
+(println "Olá," nome))
+
+([nome sobrenome]
+(println "Olá," nome sobrenome))
+
+([nome sobrenome idade]
+(println "Olá," nome sobrenome ". Idade:" idade "anos")))
+{% endhighlight %}
+
+<p>Invocando a função utilizando as três formas: </p>
+
+{% highlight clojure %}
+(ola "Guilherme")
+; Olá, Guilherme
+
+(ola "Guilherme" "Rodrigues")
+; Olá, Guilherme Rodrigues
+
+(ola "Guilherme" "Rodrigues" 23)
+; Olá, Guilherme Rodrigues . Idade: 23 anos
+{% endhighlight %}
+
+<p>
+    Clojure também nos permite definir uma função com aridade variável
+    através do parâmetro rest <i>(rest parameter)</i>. Para indicar que estamos utilizando
+    <i>rest parameter</i>, devemos utilizar o simbolo <b>&</b> como no exemplo abaixo.
+</p>
+
+{% highlight clojure %}
+
+(defn imprime-nome [nome]
+    (println "Olá" nome))
+
+(defn ola [& nomes]
+    (map imprime-nome nomes))
+{% endhighlight %}
+
+<p>No exemplo acima definimos uma função chamada <b>imprime-nome</b>
+    passando como parâmetro o nome. Utilizamos a função <b>imprime-nome</b>
+    para mapear a lista de argumentos e imprimi-los. Invocando a função com os parâmetros: </p>
+
+{% highlight clojure %}
+(ola "Guilherme" "João" "José")
+
+; Olá Guilherme
+; Olá João
+; Olá José
+
+{% endhighlight %}
+
+<p>Para utilizar <i>rest parameter</i> juntamente com outro parâmetro, devemos
+    passa-los como último parâmetro da função. Exemplo: </p>
+
+{% highlight clojure %}
+(defn mostra-time [time & nomes]
+    (println "Os jogadores do" time "são: " 
+        (clojure.string/join ", " nomes)))
+{% endhighlight %}
+
+<p>Invocando a função:</p>
+
+{% highlight clojure %}
+(mostra-time "Real Madrid" "Benzema" "Casemiro" "Rodrigo")
+; Os jogadores do Real Madrid são: Benzema, Casemiro, Rodrigo
+{% endhighlight %}
+
+
+<h2>Desestruturação</h2>
+
+<p>
+    Clojure nos permite extrair valores dos parâmetros que são passados para a função
+    utilizando um conceito chamado <i>destructuring</i>. No exemplo abaixo
+    recuperamos apenas o primeiro elemento da coleção passada como parâmetro
+    e retornamos o mesmo.
+</p>
+
+{% highlight clojure %}
+(defn primeiro-elemento [[primeiro-elemento]]
+    primeiro-elemento)
+
+(primeiro-elemento ["Carro" "Bicicleta" "Caminhão"])
+; "Carro"
+{% endhighlight %}
+
+<p>
+    Clojure nos permite utilizar a desestruturação com <i>rest parameters</i> como no exemplo abaixo:
+</p>
+
+
+{% highlight clojure %}
+(defn dois-primeiros-elementos-e-resto [[primeiro segundo & resto]]
+    (println "Primeiro:" primeiro)
+    (println "Segundo:" segundo)
+    (println "Outros:")
+    (println (clojure.string/join ", " resto)))
+
+(dois-primeiros-elementos-e-resto ["Carro" "Bicicleta" "Caminhão" "Metrô" "Ônibus"])
+
+; Primeiro: Carro
+; Segundo: Bicicleta
+; Outros:
+; Caminhão, Metrô, Ônibus
+
+
+{% endhighlight %}
+
+
+<p>
+    Também é possível utilizar desestruturação com mapas. No exemplo abaixo
+    os valores das chaves :nome e :sobrenome informadas são passados para os parâmetros nome e sobrenome:
+</p>
+
+
+{% highlight clojure %}
+(defn ola [{nome :nome sobrenome :sobrenome}]
+(println "Nome:" nome)
+(println "Sobrenome:" sobrenome))
+
+(ola {:nome "Guilherme" :sobrenome "Rodrigues"})
+
+; Nome: Guilherme
+; Sobrenome: Rodrigues
+{% endhighlight %}
+
+<h2>Corpo de função</h2>
+
+<p>O corpo da função pode conter inúmeras formas dentro dele. Porém, Clojure retorna apenas a última
+    expressão avaliada pela função. No exemplo abaixo temos diversas formas, porém apenas a última é retornada:
+</p>
+
+{% highlight clojure %}
+(defn corpo-funcao []
+    (+ 10 15)
+    "Corpo da função"
+    (* 100 12))
+
+(corpo-funcao)
+; 1200
+{% endhighlight %}
+
+<br>
+<h2>Funções anônimas</h2>
+
+<p>
+    Acima fizemos um exemplo utilizando a função <b>map</b> e passamos a função <b>imprime-nome</b> como parâmetro.
+    Relembrando a função:
+</p>
+
+{% highlight clojure %}
+
+(defn imprime-nome [nome]
+    (println "Olá" nome))
+
+(defn ola [& nomes]
+    (map imprime-nome nomes))
+{% endhighlight %}
+
+<p>
+    Porém, em Clojure não é necessário que todas as funções tenham nomes, pois a linguagem nos possibilita utilizar 
+    funções anônimas. Vejamos abaixo como podemos utilizar funções anônimas nesse caso:
+</p>
+
+{% highlight clojure %}
+(defn ola [& nomes]
+    (map (fn [nome] 
+           (println "Olá" nome)) nomes))
+
+(ola "Guilherme" "João")         
+    
+; Olá Guilherme
+; Olá João
+{% endhighlight %}
+
+<p>
+    Como visto, para definir uma função anônima, trocamos o <b>defn</b> por <b>fn</b>, retiramos o nome da função
+    e passamos como parâmetro de outra função. Porém, podemos diminuir mais um pouco a definição da função anônima.
+    Para isso, deixamos de utilizar o <b>fn</b>, não definimos o nome do parâmetro e substituimos o parâmetro apenas por 
+    <b>%</b>. Exemplo acima com função encurtada:   
+</p>
+
+{% highlight clojure %}
+(defn ola [& nomes]
+    (map #(println "Olá" %) nomes))
+
+(ola "Guilherme" "João")    
+                 
+; Olá Guilherme
+; Olá João
+{% endhighlight %}
+
+<p>
+    Caso a função anônima receba mais de um parâmetro, é possível utiliza-los como no exemplo abaixo:
+
+{% highlight clojure %}
+(#(+ %1 %2) 10 15)
+;25    
+{% endhighlight %}
+</p>
+
+<p>
+    Espero que tenha gostado das funções em Clojure. Por enquanto é só e nos vemos em um futuro post. Abraços :)
+</p>
