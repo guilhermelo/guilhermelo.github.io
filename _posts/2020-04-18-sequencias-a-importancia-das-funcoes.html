@@ -1,0 +1,173 @@
+---
+layout: post
+title: Sequências e a importância das funções
+tags: [funcional, clojure, funcoes]
+categories: [funcional, clojure, funcoes]
+---
+<p>Olá! Nesse post veremos sobre sequências e a importância das funções para as sequências e para Clojure.</p>
+
+<h2>O que são sequências?</h2>
+
+<p>Sequências são tipos de dados que abstraem os tipos de dados concretos que armazenam múltiplos valores. Ou seja, listas,
+mapas, sets e vetores são sequências que podem fazer uso de diversas funções da biblioteca de sequências do Clojure, pois 
+podemos chamar funções iguais para diferentes tipos concretos de sequências. Veremos a seguir exemplos de funções 
+que utilizam desse conceito.</p>
+
+<p>Antes de mostrar os exemplos, devemos entender um outro conceito que já foi implementado no post anterior e que tem o objetivo de
+deixar o post um pouco mais claro. </p>
+
+<h2>Funções de primeira classe e de grandeza superior</h2>
+
+<p>Funções são de extrema importância para linguagens que utilizam o paradigma de programação funcional (não me diga, hehe).
+Mas por que elas são tão importantes? Funções são cidadãs de primeira classe em Clojure, pois são tratadas como valores. Ou seja,
+podemos passa-las como parâmetro para outras funções, como fazemos com textos e números, por exemplo.</p>
+
+<p>Com a possibilidade de passar funções como parâmetro de outras funções, temos ainda um novo recurso da linguagem que são as funções de grandeza superior. 
+Funções de grandeza superior são funções que recebem outras funções como parâmetro ou que retornam uma função como resultado.</p>
+
+<p>A seguir será apresentadas funções para manipulação de dados que utilizam os conceitos explicados acima. </p>
+
+<h2>Map</h2>
+
+<p>A função map nos ajuda a mapear sequências para novos valores. Map recebe como parâmetros uma função e uma sequência. 
+	Será aplicada a função para cada item da sequência. Exemplo: </p>
+
+{% highlight clojure %}
+(map inc [1 2 3 4 5])
+; (2 3 4 5 6)
+{% endhighlight %}
+
+<p>No exemplo acima a função <b>inc</b> incrementa um em cada item da sequência (nesse caso send um vetor). </p>
+
+<p>É muito comum precisarmos recuperar apenas um valor de um mapa. No exemplo a seguir utilizamos a keyword <b>:nome</b>
+	como uma função para criar uma nova sequência através do mapa.</p>
+
+{% highlight clojure %}
+; define vetor de mapas de jogadores
+(def jogadores 
+	[{:nome "Ronaldo" 	 :idade 43},
+	 {:nome "Rivaldo" 	 :idade 47},
+	 {:nome "Ronaldinho" :idade 40},
+	 {:nome "Kaká" 		 :idade 37}])
+
+; Mapeando apenas os nomes dos jogadores 
+(map :nome jogadores)  
+; ("Ronaldo" "Rivaldo" "Ronaldinho" "Kaká")
+{% endhighlight %}
+
+
+<p>Podemos utilizar também a função <b>map</b> para criar novos mapas utilizando mais de uma sequência. </p>
+
+{% highlight clojure %}
+(def jogadores ["Ronaldo" "Rivaldo" "Ronaldinho" "Kaká"])
+
+(def idades [43 47 40 37])
+
+(defn define-jogadores [jogador idade]
+	{:nome jogador
+	 :idade idade})
+	 
+(map define-jogadores jogadores idades)
+; ({:nome "Ronaldo", :idade 43} {:nome "Rivaldo", :idade 47} {:nome "Ronaldinho", :idade 40} {:nome "Kaká", :idade 37})
+{% endhighlight %}
+
+<h2>Reduce</h2>
+
+<p>Reduce é uma função que combina todos os itens de uma coleção em um só valor. Reduce, assim como as outras funções, também aplica uma função para cada
+	item da coleção, porém para cada aplicação da função o resultado é acumulado. Exemplo: </p>
+
+{% highlight clojure %}
+(reduce + [1 2 3 4 5])
+; 15
+{% endhighlight %}
+
+<p>No exemplo acima, a cada item que foi somado, o valor somado foi salvo em uma variável interna que é o acumulador. 
+	Quando não houver mais itens na coleção o valor acumulado é retornado. É como se estivessemos fazendo assim:</p>
+
+{% highlight clojure %}
+(+ (+ (+ (+ 1 2) 3) 4) 5)
+; 15
+{% endhighlight %}
+
+<p>Reduce aceita também um valor inicial:</p>
+
+{% highlight clojure %}
+(reduce + 10 [1 2 3 4 5])
+; 25
+{% endhighlight %}
+
+<p>Podemos unificar uma sequência de sequências utilizando reduce: </p>
+
+{% highlight clojure %}
+(reduce concat [] [[1 2 3 4 5] [6 7 8 9 10]])
+; (1 2 3 4 5 6 7 8 9 10)
+{% endhighlight %}
+
+<h2>Filter</h2>
+
+<p>A função filter é utilizada para filtrar valores de uma sequência de acordo com a regra definida
+	pela função passada como parâmetro juntamente com a sequência. Exemplo: </p>
+
+{% highlight clojure %}
+(def pacientes-hospital [{:mes 1 :pacientes-atendidos 150}
+	{:mes 2 :pacientes-atendidos 233}
+	{:mes 3 :pacientes-atendidos 298}
+	{:mes 4 :pacientes-atendidos 144}
+	{:mes 5 :pacientes-atendidos 128}])
+
+
+(filter #(< (:mes %) 3) pacientes-hospital)
+; ({:mes 1, :pacientes-atendidos 150} {:mes 2, :pacientes-atendidos 233})
+{% endhighlight %}
+
+<h2>Take-while</h2>
+
+<p>A função take-while recebe uma função e uma sequência como parâmetro. A função passada para take-while deve retornar <i>true</i>
+	ou <i>false</i> de acordo com algum critério. Exemplo:</p>
+
+{% highlight clojure %}
+(take-while #(< (:mes %) 3) pacientes-hospital)
+;({:mes 1, :pacientes-atendidos 150} {:mes 2, :pacientes-atendidos 233})
+{% endhighlight %}
+
+<p>No exemplo acima, só serão retornados os registros em que o mês é menor que 3, pois quando a função anônima
+	retorna <i>false</i>, são retornados todos os valores testados até aquele ponto.</p>
+
+<p>A diferença entre o filter e o take-while é que o filter processa toda a sequência 
+	enquanto o take-while processa a sequência até uma determinada parte de acordo com regra
+	implementada pela função passada como parâmetro.</p>
+
+<h2>Drop-while</h2>
+
+<p>A função drop-while segue um raciocínio parecido com a take-while, sendo a única diferença que os registros 
+	da sequência serão excluidos até que a função passada como parâmetro retorne <i>false</i>. </p>
+
+{% highlight clojure %}
+(drop-while #(< (:mes %) 3) pacientes-hospital)
+; ({:mes 3, :pacientes-atendidos 298} {:mes 4, :pacientes-atendidos 144} {:mes 5, :pacientes-atendidos 128})
+{% endhighlight %}
+
+<h2>Some</h2>
+
+<p>A função some também recebe uma função e uma sequência como parâmetro e retorna 
+	<i>true</i> quando encontra um elemento que segue a regra da função ou <i>false</i> 
+	quando não encontra. Exemplo: </p>
+
+{% highlight clojure %}
+(some #(> (:pacientes-atendidos %) 250) pacientes-hospital)
+; true
+{% endhighlight %}
+
+
+<h2>Sort-By</h2>
+
+<p>A função <b>sort-by</b> também recebe uma função e uma sequência como parâmetros. A função <b>sort-by</b> ordena a sequência de acordo
+com a regra implementada pela função passada como parâmetro. No exemplo abaixo, a sequência é ordenada pelo tamanho do nome: </p>
+
+{% highlight clojure %}
+(sort-by count ["Ronaldo" "Rivaldo" "Ronaldinho" "Kaká"])
+; ("Kaká" "Ronaldo" "Rivaldo" "Ronaldinho")
+{% endhighlight %}
+
+
+<p>Bem, por enquanto é isso, espero que tenha aproveitado o conteúdo e nos vemos num post futuro. Até lá! :)</p>
