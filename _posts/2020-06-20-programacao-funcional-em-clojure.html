@@ -1,0 +1,260 @@
+---
+layout: post
+title: Programação Funcional em Clojure
+tags: [funcional, clojure]
+categories: [funcional, clojure]
+--- 
+
+<p>Olá! Nesse post falaremos um pouco sobre programação funcional em Clojure. Bora? :)</p>
+
+<h2>Imutabilidade</h2>
+
+<p>Imutabilidade é útil quando desejamos evitar a mudança de estado em nosso sistema, principalmente
+    quando temos que trabalhar com concorrência, pois caso haja alguma falha,
+    torna-se difícil de debugar o mesmo para encontrar a verdadeira causa. Em Clojure,
+    toda vez que manipulamos uma estrutura de dados, retornamos não a estrutura manipulada,
+    mas sim uma nova versão da estrutura com as mudanças realizadas. Clojure utiliza de certas
+    estruturas de dados internamente para que essa copia não tenha uma performance ruim.  
+</p>
+
+ <h2>Transparência Referencial</h2>
+
+ <p>Transparência Referencial é quando podemos substituir uma expressão pelo seu valor
+ sem mudar o comportamento do programa, ou seja, é quando definimos uma função que recebe um argumento
+ e sempre retorna o mesmo resultado quando dado o mesmo argumento. </p>
+
+<p>Exemplo de uma função referencialmente transparente:</p>
+
+{% highlight clojure %}
+(defn multiplicacao [x y]
+    (* x y))
+
+(multiplicacao 10 5)
+; => 50
+{% endhighlight %}
+
+<p>No exemplo acima, sempre que passarmos os mesmos argumentos, o resultado será o mesmo. </p>
+
+ <h2>Funções Puras</h2>
+
+ <p>Funções puras são aqueles que atendem a dois requisitos. O primeiro deles
+ é que a função deve retornar sempre o mesmo resultado dado os mesmos argumentos.
+ O segundo requisito é que a função não deve causar nenhum efeito colateral, ou seja,
+ ela não deve fazer nenhuma mudança fora da função em si, como por exemplo, mudando o valor 
+ de uma variável externa. Se a função alterar algum valor dentro dela ou algo afetar o resultado 
+ da função, então essa função não é pura. Exemplo: </p>
+
+{% highlight clojure %}
+(def numeros '(1 2 3 4 5))
+
+(defn incrementa-numeros []
+    (map inc numeros))
+
+(incrementa-numeros)
+; => (2 3 4 5 6)
+{% endhighlight %}
+
+<p>No exemplo acima, a função <b>incrementa-numeros</b> não recebe parâmetros, porém ela utiliza uma variável externa
+que poderia ser modificada antes dela ser invocada, podendo não retornar os mesmos valores dados os mesmos argumentos. 
+No exemplo abaixo podemos ver uma versão pura da função anterior, onde a função recebe a sequência como parâmetro. </p>
+
+{% highlight clojure %}
+(def numeros '(1 2 3 4 5))
+
+(defn incrementa-numeros [sequencia]
+   (map inc sequencia))
+
+(incrementa-numeros numeros)
+; => 2 3 4 5 6
+{% endhighlight %}
+
+<p>Se uma função lê um arquivo, ela não é referencialmente transparente porque
+o conteúdo do arquivo pode se modificar. Nos exemplos abaixo existem as 
+funções <b>conta-caracteres</b> e <b>analisa-arquivo</b>, sendo respectivamente, uma pura e outra não.</p>
+
+{% highlight clojure %}
+(defn conta-caracteres [texto]
+    (str "Quantidade de caracteres:" (count texto)))
+
+(defn analisa-arquivo [arquivo]
+    (conta-caracteres (slurp arquivo)))
+{% endhighlight %}
+ 
+ <p>Funções puras tornam a manutenção e a leitura do sistema mais clara, pois 
+ as funções ficam isoladas, sem impactar as demais funções e valores do sistema. 
+ Além de serem consistentes, pois utilizam do conceito de transparência referencial.</p>
+
+<h2>Trabalhando com Estrutura de Dados imutáveis</h2>
+
+<p>Todo programa deve ter funções impuras, porém essas funções devem ser em menor quantidade
+    e bem isoladas. Clojure nos ajuda provendo estruturas de dados imutáveis em seu <i>core</i> 
+    que veremos a seguir.</p>
+
+<h3>Recursão em vez de for/while</h3>
+
+<p>Diferente de outras linguagens que utilizam de efeitos colaterais em loops como <b>for</b>
+e <b>while</b>, Clojure nos proporciona a alterativa para a mutação através da recursão. 
+O exemplo abaixo demonstra a soma dos valores de um vetor através de recursão:</p>
+
+{% highlight clojure %}
+(defn soma 
+    ([numeros] (soma numeros 0))
+    ([numeros total]
+        (if (empty? numeros)
+            total
+            (soma (rest numeros) (+ (first numeros) total)))))
+{% endhighlight %}
+
+
+<p>No exemplo acima é verificado se o vetor passado como parâmetro é vazio. Caso seja
+vazio o total da soma é retornado. No entanto, se o vetor ainda não é vazio,
+chama-se a função novamente passando como parâmetros o restante dos valores do vetor
+e a soma do primeiro item do vetor com o total acumulado até o momento. A função <b>rest</b>
+sempre devolve todos os itens do vetor, exceto o primeiro. Abaixo podemos ver como 
+ocorrem as chamadas recursivas: </p>
+
+{% highlight clojure %}
+(soma [1 2 3 4 5])
+(soma [1 2 3 4 5] 0)
+(soma [2 3 4 5] 1)
+(soma [3 4 5] 3)
+(soma [4 5] 6)
+(soma [5] 10)
+(soma [] 15)
+; => 15
+{% endhighlight %}
+
+<p>A cada chamada recursiva, um novo escopo é criado onde <b>numeros</b>
+e <b>total</b> são associados a diferentes valores, sem a necessidade
+de alterar os valores originais. Se executamos essa função para somar apenas
+do 0 até o 1000, tudo funciona corretamente. </p>
+
+{% highlight clojure %}
+(soma (range 1000))
+; => 499500
+{% endhighlight %}
+
+<p>Porém, se executamos a soma do 0 até 100 mil, temos um StackOverflow. </p>
+
+{% highlight clojure %}
+(soma (range 100000))
+; Execution error (StackOverflowError) 
+{% endhighlight %}
+
+<p>Por razões de performance e para evitar problemas desse tipo, Clojure recomenda a utilização da 
+função <b>recur</b>  se você estiver processando recursivamente uma coleção com milhares ou milhões 
+de valores. Exemplo da função anterior utilizando <b>recur</b>.</p>
+
+{% highlight clojure %}
+(defn soma 
+ ([numeros] (soma numeros 0))
+ ([numeros total]
+     (if (empty? numeros)
+         total
+         (recur (rest numeros) (+ (first numeros) total)))))
+
+(soma (range 100000))
+; => 4999950000
+{% endhighlight %}
+
+<h2>Composição de função</h2>
+
+<p>Composição de função é o ato de combinar funções passando valores de uma  função para outra. Ao utilizar composição de funções, 
+passamos a ter um código mais reutilizável. Clojure oferece algumas funções que ajudam o desenvolvedor como a função <b>comp</b>. </p>
+
+<h3>Comp</h3>
+
+<p>A função comp tem o objetivo de criar uma nova função através de outras funções. Abaixo um exemplo simples de utilização: </p>
+
+{% highlight clojure %}
+((comp clojure.string/capitalize clojure.string/lower-case clojure.string/reverse) "GUILHERME")
+; => "Emrehliug"
+{% endhighlight %}
+
+<p>As funções passadas como parâmetro para <b>comp</b> são executadas da direita para a esquerda, ou seja, sendo a ordem de execução:
+reverse, lower-case e capitalize. O código anterior é uma versão mais concisa do código abaixo:</p>
+
+{% highlight clojure %}
+(clojure.string/capitalize 
+    (clojure.string/lower-case 
+        (clojure.string/reverse "GUILHERME")))
+; => "Emrehliug"
+{% endhighlight %}
+
+<p>Devemos usar <b>comp</b> para deixar nosso código mais fácil de entender e mais reutilizável. No exemplo a seguir vemos como a 
+    utilização de <b>comp</b> deixa tudo mais claro.</p>
+
+<p>Utilizando comp: </p>
+
+{% highlight clojure %}
+(map (comp keyword str) ["Brasil" "França"])
+; => (:Brasil :França)
+{% endhighlight %}
+
+<p>Sem utilizar comp: </p>
+
+{% highlight clojure %}
+(map #(keyword (str %)) ["Brasil" "França"])
+; => (:Brasil :França)
+{% endhighlight %}
+
+<p>Nos dois casos o resultado é o mesmo, porém no primeiro exemplo fica mais claro como as coisas acontecem. </p>
+    
+<h2>Aplicação parcial com partial</h2>
+
+<p>A função partial recebe uma função e vários argumentos. Com isso, partial
+    retorna uma nova função que, ao ser invocada, retorna a função original passada como parâmetro
+    utilizando os parâmetros originais. Exemplo: </p>
+
+{% highlight clojure %}
+(def adiciona-cem (partial + 100))
+
+(adiciona-cem 200)
+; => 300
+{% endhighlight %}
+
+<p>No exemplo, quando chamamos adiciona-cem, ela chama a função <b>+</b> passando
+o valores 100 e 200 como parâmetro.</p> 
+
+<p>A função partial é útil quando desejamos reutilizar uma determinada combinação de funções
+ e argumentos. No exemplo abaixo utilizamos partial para reaproveitar a geração do log:</p>
+
+{% highlight clojure %}
+(defn log 
+    [nivel mensagem]
+    (condp = nivel
+        :erro (clojure.string/upper-case mensagem)
+        :sucesso (clojure.string/lower-case mensagem)))
+
+(def mensagem-erro (partial log :erro))
+
+(def mensagem-sucesso (partial log :sucesso))
+
+(mensagem-erro "Erro ao tentar acessar recurso")
+
+(mensagem-sucesso "Recurso salvo")
+{% endhighlight %}
+
+<h2>Memoize</h2>
+
+<p><i>Memoization</i> nos da a vantagem da transparência referencial que citei no início do post, 
+pois <b>memoize</b> guarda os parâmetros e o retorno da função. Dessa forma, quando houver várias chamadas 
+para a mesma função com os mesmos argumentos, o resultado é retornado imediatamente.  Em casos de funções 
+que levam muito tempo para serem executadas, a função memoize é muito útil.</p>
+
+<p>No exemplo abaixo temos uma primeira versão da função <b>exibe</b> que exibe a mensagem após 1 segundo. Na 
+segunda versão da função utilizamos <b>memoize</b> para retornar o valor imediatamente após a primeira chamada.</p>
+
+{% highlight clojure %}
+(defn exibe [mensagem]
+    (Thread/sleep 1000)
+    mensagem)
+
+(def exibe-com-memoize (memoize (defn exibe [mensagem]
+    (Thread/sleep 1000)
+    mensagem)))
+
+{% endhighlight %}
+
+<p>Espero que esse post tenha te ajudado a entender um pouco mais sobre Clojure e 
+    como usamos programação funcional nessa linguagem. Nos vemos num post futuro. :)</p>
