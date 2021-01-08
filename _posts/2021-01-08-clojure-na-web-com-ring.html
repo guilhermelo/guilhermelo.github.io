@@ -1,0 +1,315 @@
+---
+layout: post
+title: Clojure na Web com Ring
+tags: [clojure, web, ring]
+categories: [clojure, web, ring]
+---
+
+<p>Ring é uma biblioteca baseada no WSGI do Python e no Rack do Ruby que nos ajuda na criação de aplicações web em
+    Clojure, abstraindo os detalhes do HTTP. Ring é a base para muitas aplicações e bibliotecas do mundo web em Clojure, 
+    pois ele trabalha com o baixo nível das requisições HTTP. Ring possui três conceitos principais: <b>Handler, Adapter e Middleware</b>
+</p>
+
+<h2>Handler</h2>
+
+<p>Para trabalhar com as requisições, precisamos criar <i>handlers</i>, que nada mais são do que funções que recebem uma requisição
+e devolvem uma resposta. As requisições e as repostas são mapas que contém informações como chaves baseadas na API de Servlet.</p>
+
+<h3>Requisição</h3>
+
+<p>Uma requisição contém informações que são acessadas através das chaves, onde as principais são: </p>
+
+<p>
+  <ul>
+    <li><b>:server-port</b>: Porta do servidor que está recebendo a requisição</li>
+    <li><b>:server-name</b>: Nome ou IP do servidor que está recebendo a requisição</li>
+    <li><b>:query-string</b>: Query string da requisição (?q=name)</li>
+    <li><b>:request-method</b>: Método HTTP utilizado na requisição (:post, :get, etc)</li>
+    <li><b>:body</b>: Corpo da requisição</li>
+    <li><b>:headers</b>: Headers da requisição</li>
+  </ul>
+</p>
+
+<h3>Resposta</h3>
+
+<p>Uma resposta contém apenas três informações que são: </p>
+
+<p>
+  <ul>
+    <li><b>:body</b>: Corpo da resposta</li>
+    <li><b>:headers</b>: Header da resposta contendo um mapa com chave/valor</li>
+    <li><b>:status</b>: Status da resposta (200, 404, 500, etc)</li>
+  </ul>
+</p>
+
+
+<h2>Adapter</h2>
+<p>Um adapter é uma ponte entre a aplicação Ring e os detalhes de implementação do protocolo HTTP. O adapter recebe uma requisição, transforma a requisição 
+  em um mapa e passa esse mapa para a aplicação Ring realizar o processamento. Após processar o mapa recebido, a aplicação Ring retorna um mapa de resposta
+  que é usado pelo adapter para retornar a resposta HTTP.
+</p>
+
+<p>Alguns exemplos de adapter: 
+  <ul>
+    <li><a href="https://github.com/ring-clojure/ring/tree/master/ring-jetty-adapter">Jetty</a></li>
+    <li><a href="https://github.com/mmcgrana/ring-httpcore-adapter">Apache HttpCore</a></li>
+  </ul>
+</p>
+
+
+<h2>Middleware</h2>
+
+<p>Um middleware permite que alteremos a forma como a requisição é processada. Middlewares são utilizados para ampliar a funcionalidade
+  dos handlers. Um middleware é uma função que recebe um handler e outros parâmetros opcionais, processa-os e retornando um novo handler com novos comportamentos.
+  No exemplo a seguir veremos como criar e utilizar middlewares existentes.
+</p>
+
+<h2>Criando um projeto com Ring</h2>
+
+<p>Para criar um servidor com o Ring, precisamos primeiramente criar um projeto. No nosso caso, utilizaremos o Leiningen
+    para a criação do projeto. Para instalar e configurar o Leiningen, acesse o <a href="https://leiningen.org/">site</a> e siga as instruções. 
+    Após instalar o Leiningen, execute o seguinte comando no seu terminal: </p>
+
+<p><i>lein new hello-ring</i></p>
+
+<p>Será gerado um projeto com a seguinte estrutura: </p>
+
+
+<img src="/public/img/estrutura-projeto.png" alt="Estrutura do Projeto">
+
+<p>
+    Diretórios mais importantes para nós nesse momento:
+    <ul>
+        <li><b>doc:</b> Diretório onde é colocada a documentação do projeto</li>
+        <li><b>src:</b> Diretório onde fica o código fonte do projeto</li>
+        <li><b>test:</b> Diretório onde ficam os testes</li>
+        <li><b>project.clj:</b> Arquivo responsável por toda configuração do projeto (semelhante ao pom.xml de projetos Java com Maven)
+        </li>
+    </ul>
+</p>
+
+<p>Abra o arquivo <b>project.clj</b>. Começaremos adicionando novas dependências para o projeto. 
+No vetor :dependencies, adicione duas dependências do Ring: </p>
+
+{% highlight clojure %}
+
+:dependencies [[org.clojure/clojure "1.10.0"]
+               ; principais funções do Ring
+               [ring/ring-core "1.8.1"]
+               ; adapter Jetty para Ring
+               [ring/ring-jety-adapter "1.8.1"]]
+
+{% endhighlight %}
+
+<p>Após adicionar as duas dependências, execute o comando para baixa-las no seu reposítorio local do Leiningen.</p>
+
+<p><i>lein deps</i></p>
+
+<p>Agora, abra o arquivo <b>core.clj</b> que está dentro do diretório <b>src/hello_ring</b>. Nesse arquivo temos a declaração do namespace <b>hello-ring.core</b>
+   e a importação do adapter do servidor Jetty. </p>
+
+{% highlight clojure %}
+
+(ns hello-ring.core
+  (:require [ring.adapter.jetty :as jetty]))
+
+{% endhighlight %}
+
+<p>Vamos adicionar nosso primeiro handler que retornará um mapa como resposta contendo o status, o corpo da requisição
+  e um header de Content-Type.</p>
+
+{% highlight clojure %}
+
+(defn ola-web [request]
+  {:status 200
+   :body "Olá web"
+   :headers {"Content-Type" "text/plain; charset=utf-8"}})
+
+{% endhighlight %}
+
+<p>Por fim, criamos uma função chamada <b>-main</b> que será chamada pelo Leiningen.
+Dentro da função main, iniciamos o servidor Jetty associando a ele o handler <b>(ola-web)</b> e um mapa com a configuração da porta (3000).</p>
+
+{% highlight clojure %}
+
+(ns hello-ring.core
+  (:require [ring.adapter.jetty :as jetty]))
+
+(defn ola-web [request]
+  {:status 200
+   :body "Olá web"
+   :headers {"Content-Type" "text/plain; charset=utf-8"}})
+
+(defn -main [& args]
+  (jetty/run-jetty ola-web {:port 3000}))
+
+{% endhighlight %}
+
+<p>Para inicializar o servidor pelo terminal, precisamos fazer uma configuração a mais. Abra o arquivo <b><b>project.clj</b></b> e
+adicione uma linha <b>(:main hello-ring.core)</b> para dizer ao Leiningen que o projeto inicializará pelo namespace <b>hello-ring.core</b> através da função <b>-main</b>:</p>
+
+
+{% highlight clojure %}
+(defproject hello-ring "0.1.0-SNAPSHOT"
+  :description "FIXME: write description"
+  :url "http://example.com/FIXME"
+  :license {:name "EPL-2.0 OR GPL-2.0-or-later WITH Classpath-exception-2.0"
+            :url "https://www.eclipse.org/legal/epl-2.0/"}
+  :dependencies [[org.clojure/clojure "1.10.0"]
+                 [ring/ring-core "1.8.1"]
+                 [ring/ring-jetty-adapter "1.8.1"]]
+  :main hello-ring.core
+  :repl-options {:init-ns hello-ring.core})
+
+{% endhighlight %}
+
+<p>Agora, abra novamente o terminal e execute o comando para incializar o projeto. </p>
+
+<p><i>lein run</i></p>
+<p>O servidor será inicializado. Abra o navegador e digite <b>localhost:3000</b>. Deve ser mostrada a mensagem "Olá web".</p>
+
+<h3>Criando um middleware</h3>
+
+<p>Criaremos um middleware que adicionará a chave <b>:query-params</b> ao header da requisição com os dados da <b>query-string</b>. 
+
+{% highlight clojure %}
+(defn parse-query
+  "Transforma a query-string em um mapa de parâmetros"
+  [query-string]
+  (if (> (count query-string) 0)
+    (apply hash-map (str/split query-string #"[&=]"))))
+
+(defn wrap-query-param
+  "Adiciona a chave :query-param ao header da requisição"
+  [handler]
+  (fn [request]
+    (let [query-param (parse-query (:query-string request))
+          nova-req (assoc request :query-params query-param)]
+      (handler nova-req))))
+{% endhighlight %}
+</p>
+
+<p>No código acima, criamos a função <b>parse-query</b> responsável por quebrar os parâmetros da requisição e criar um mapa de chave/valor. 
+Nosso middleware <b>(wrap-query-param)</b> captura os parâmetros, recebe o mapa criado pela função anterior e associa esse mapa a requisição atual, criando uma nova requisição 
+e passando-a para o handler recebido como parâmetro do middleware. </p>
+
+<p>Para utilizar nosso middleware, passamos nosso handler como parâmetro para ele, que por sua vez, é passado como parâmetro 
+  para a função que cria o servidor. </p>
+
+{% highlight clojure %}
+(defn -main [& args]
+  (jetty/run-jetty (wrap-query-param ola-web) {:port 3000}))
+{% endhighlight %}
+
+<p>Alteramos o código da função <b>ola-web</b> para pegar o parâmetro e retornar a mensagem. Abaixo o código completo: </p>
+
+<p>
+{% highlight clojure %}
+(ns hello-ring.core
+  (:require [ring.adapter.jetty :as jetty]
+            [clojure.string :as str]))
+
+(defn ola-web [request]
+  (let [nome (get (:query-params request) "nome")]
+    {:status 200
+     :body (str "Olá " nome)
+     :headers {"Content-Type" "text/plain; charset=utf-8"}}))
+
+(defn parse-query
+  "Transforma a query-string em um mapa de parâmetros"
+  [query-string]
+  (if (> (count query-string) 0)
+    (apply hash-map (str/split query-string #"[&=]"))))
+
+(defn wrap-query-param
+  "Adiciona a chave :query-param ao header da requisição"
+  [handler]
+  (fn [request]
+    (let [query-param (parse-query (:query-string request))
+          nova-req (assoc request :query-params query-param)]
+      (handler nova-req))))
+
+(defn -main [& args]
+  (jetty/run-jetty (wrap-query-param ola-web) {:port 3000}))
+{% endhighlight %}
+</p>
+
+<p>Execute novamente o comando para subir o servidor: </p>
+<p><i>lein run</i></p>
+
+<p>No navegador, digite <b>localhost:3000/?nome=Guilherme</b> e veja o resultado.</p>
+
+<h3>Utilizando um middleware pronto para retornar JSON</h3>
+
+<p>Agora utilizaremos dois middlewares existentes. Um vai capturar os dados da query-string como fizemos no nosso middleware e o outro retornará 
+  os dados da requisição como JSON. Abra o arquivo <b>project.clj</b> e adicione a seguinte dependência responsável pelo middleware de JSON: </p>
+
+<p><i>[ring/ring-json "0.5.0"]</i></p>
+
+
+<p>No nosso namespace <b>hello-ring.core</b>, vamos adicionar as dependências dos dois middlewares, sendo o <b>wrap-params</b> pertencente à biblioteca
+<b>ring-core</b> e o <b>wrap-json-response</b> à biblioteca <b>ring-json</b>.</p>
+
+<p>
+{% highlight clojure %}
+(ns hello-ring.core
+  (:require [ring.adapter.jetty :as jetty]
+            [ring.middleware.params :refer [wrap-params]]
+            [ring.middleware.json :refer [wrap-json-response]]))
+
+(defn ola-web [request]
+  (let [nome (get (:query-params request) "nome")]
+    {:status 200
+     :body {:nome nome}
+     :headers {}}))
+
+(defn -main [& args]
+  (jetty/run-jetty
+    (-> ola-web
+        wrap-params
+        wrap-json-response)
+    {:port 3000}))
+{% endhighlight %}
+</p>
+
+<p>No nosso código acima temos algo um pouco diferente na inicialização do servidor. Utilizamos uma <b>thread-fist</b> para processar nosso handler
+utilizando os dois middlewares. Thread-first é uma forma que temos em Clojure de processar informações de forma clara e encadeada, pois o resultado da primeira linha
+é passado como parâmetro para a função da linha de baixo. Nesse caso, passamos nosso handler como parâmetro para o middleware <b>wrap-params</b> e o resultado do retorno desse middleware
+é passado como parâmetro para o middleware de baixo <b>(wrap-json-response)</b>.</p>
+
+<p>Execute novamente o comando para subir o servidor: </p>
+<p><i>lein run</i></p>
+
+<p>No navegador, digite <b>localhost:3000/?nome=Guilherme</b>. O resultado é mostrado no formato JSON.</p>
+
+<p>Podemos melhorar o retorno do nosso handler adicionando uma biblioteca para utilizar os métodos HTTP. No arquivo 
+  <b>project.clj</b>, adicione a dependência abaixo:</p>
+
+<p><i>[metosin/ring-http-response "0.9.1"]</i></p>
+
+<p>No namespace <b>hello-ring.core</b>, adicione a dependência do http-response para a utilização da função <b>ok</b>. 
+  Passamos o mesmo mapa para a função <b>ok</b>, que retornará o status 200 juntamente com o corpo da resposta.</p>
+
+<p>
+{% highlight clojure %}
+(ns hello-ring.core
+  (:require [ring.adapter.jetty :as jetty]
+            [ring.middleware.params :refer [wrap-params]]
+            [ring.middleware.json :refer [wrap-json-response]]
+            [ring.util.http-response :refer [ok]]))
+
+(defn ola-web [request]
+  (let [nome (get (:query-params request) "nome")]
+    (ok {:nome nome})))
+
+(defn -main [& args]
+  (jetty/run-jetty
+    (-> ola-web
+        wrap-params
+        wrap-json-response)
+    {:port 3000}))
+{% endhighlight %}
+</p>
+
+<p>Ring é uma biblioteca potente e básica para inicializar o desenvolvimento web em Clojure, porém é a base para outras bibliotecas que veremos 
+  mais pra frente, como Compojure, Reitit e Pedestal. Nos vemos num próximo post. :)</p>
